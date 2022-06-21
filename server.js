@@ -5,6 +5,7 @@ const cors = require("cors");
 const Port = process.env.Port || 9066;
 
 app.use(express.json());
+app.use(cors());
 app.use("/api", require("./Routes/signupin"));
 
 Mongoose.connect(
