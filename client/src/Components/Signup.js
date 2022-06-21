@@ -5,14 +5,13 @@
 // };
 
 // export default SignUp;
-
-import * as React from "react";
+import axios from "axios";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
@@ -42,13 +41,44 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignUp() {
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
+  const [credentials, setCredentials] = useState({
+    Name: "",
+    Email: "",
+    Password: "",
+  });
+  let navigate = useNavigate();
+  // const {name, email, password} = credentials;
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    axios.post("http://localhost:9066/api/signup", credentials).then((data) => {
+      console.log(data.data.createUser);
+      if (data.data.message === "succesfully created User") {
+        // localStorage.setItem("token", data.data.token);
+        // console.log(data.data.token);
+        window.alert("Register Successfull");
+        navigate("/Login");
+      }
     });
+    // const response = await fetch("http://localhost:5000/api/signUp", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({
+    //     name, email, password
+    //   }),
+    // });
+    // const json = await response.json();
+    // console.log(json);
+    // if(json.success){
+    //   //save the auth-token and redirect
+    //   localStorage.setItem("token", json.token);
+    //   navigate('/login')
+    //   window.alert("Account Created Successfully");
+    // }
+  };
+  const handleChange = (e) => {
+    setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
 
   return (
@@ -82,7 +112,9 @@ export default function SignUp() {
                   name="Name"
                   required
                   fullWidth
+                  value={credentials.Name}
                   id="firstName"
+                  onChange={handleChange}
                   label="Name"
                   autoFocus
                 />
@@ -92,9 +124,11 @@ export default function SignUp() {
                 <TextField
                   required
                   fullWidth
-                  id="email"
+                  id="Email"
+                  value={credentials.Email}
+                  onChange={handleChange}
                   label="Email Address"
-                  name="email"
+                  name="Email"
                   autoComplete="email"
                 />
               </Grid>
@@ -104,8 +138,10 @@ export default function SignUp() {
                   fullWidth
                   name="Password"
                   label="Password"
+                  value={credentials.Password}
                   type="password"
                   id="password"
+                  onChange={handleChange}
                   autoComplete="new-password"
                 />
               </Grid>
