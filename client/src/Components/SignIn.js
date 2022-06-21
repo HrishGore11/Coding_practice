@@ -6,7 +6,9 @@
 
 // export default SignIn;
 
-import * as React from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -41,14 +43,28 @@ function Copyright(props) {
 
 const theme = createTheme();
 
-export default function SignInSide() {
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+export default function SignIn() {
+  const [credentials, setCredentials] = useState({ Email: "", Password: "" });
+  let navigate = useNavigate();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    axios
+      .post("http://localhost:9066/api/signIN", credentials)
+      .then((data) => {
+        console.log(data);
+        if (data.data.success === true) {
+          window.alert("Login Successfull");
+          navigate("/Home");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const handleChange = (e) => {
+    setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
 
   return (
@@ -99,7 +115,9 @@ export default function SignInSide() {
                 fullWidth
                 id="email"
                 label="Email Address"
-                name="email"
+                name="Email"
+                value={credentials.Email}
+                onChange={handleChange}
                 autoComplete="email"
                 autoFocus
               />
@@ -107,7 +125,9 @@ export default function SignInSide() {
                 margin="normal"
                 required
                 fullWidth
-                name="password"
+                name="Password"
+                value={credentials.Password}
+                onChange={handleChange}
                 label="Password"
                 type="password"
                 id="password"
